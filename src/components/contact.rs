@@ -60,7 +60,7 @@ pub fn Contact() -> Element {
 
         #[cfg(target_arch = "wasm32")]
         {
-            status.set("Contact form submission is only available when running with server features enabled.".to_string());
+            status.set("Contact form error".to_string());
         }
 
         is_submitting.set(false);
@@ -71,7 +71,7 @@ pub fn Contact() -> Element {
             div { class: "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8",
                 div { class: "mb-8 space-y-4",
                     p { class: "text-base text-gray-700",
-                        "Please submit the form below for all inquiries."
+                        "For career-related inquiries please email careers@maquoketa.net. For all other inquiries email external@maquoketa.net with your organization (if applicable) and reason for inquiry, or submit the form below."
                     }
                 }
 
