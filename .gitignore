@@ -8,4 +8,3 @@
 
 # Environment variables (contains sensitive SMTP credentials)
 .env
-docs/
