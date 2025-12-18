@@ -4,7 +4,6 @@ out_dir = "dist"
 [web.app]
 # HTML title tag content
 title = "maqr-web-ext"
-base_path = "maqr-web-ext"
 
 # include `assets` in web platform
 [web.resource]
