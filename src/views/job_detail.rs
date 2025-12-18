@@ -19,7 +19,7 @@ pub fn JobDetail(job_id: String) -> Element {
 
         section { class: "py-16 bg-white",
             div { class: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-                // Responsibilities Section
+                
                 if !job_info.responsibilities.is_empty() {
                     div { class: "mb-12",
                         h2 { class: "text-2xl font-bold text-navy mb-6",
@@ -33,7 +33,7 @@ pub fn JobDetail(job_id: String) -> Element {
                     }
                 }
 
-                // Skills Section
+                
                 if !job_info.skills.is_empty() {
                     div { class: "mb-12",
                         h2 { class: "text-2xl font-bold text-navy mb-6",
@@ -47,7 +47,7 @@ pub fn JobDetail(job_id: String) -> Element {
                     }
                 }
 
-                // Compensation Section
+                
                 if let Some(compensation) = &job_info.compensation {
                     div { class: "mb-12 pb-8 border-b border-gray-300",
                         p { class: "text-gray-700 leading-relaxed mb-4",
@@ -61,7 +61,7 @@ pub fn JobDetail(job_id: String) -> Element {
                     }
                 }
 
-                // Footer Text
+                
                 div { class: "mb-8",
                     p { class: "text-gray-700 italic mb-2",
                         "No telephone inquiries, please."
@@ -71,7 +71,7 @@ pub fn JobDetail(job_id: String) -> Element {
                     }
                 }
 
-                // Apply Button
+                
                 button {
                     class: "bg-navy hover:bg-navy/90 text-white font-semibold py-3 px-8 transition-colors duration-200",
                     "Apply Now"

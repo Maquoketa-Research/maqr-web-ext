@@ -1,6 +1,8 @@
-use crate::Route;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
+
+#[cfg(not(target_arch = "wasm32"))]
+use dioxus::prelude::ServerFnError;
 
 #[derive(Serialize, Deserialize, Clone)]
 struct ContactFormData {
@@ -14,42 +16,51 @@ struct ContactFormData {
 
 #[component]
 pub fn Contact() -> Element {
+    let mut name = use_signal(|| String::new());
+    let mut company = use_signal(|| String::new());
+    let mut email = use_signal(|| String::new());
+    let mut phone = use_signal(|| String::new());
+    let mut reason = use_signal(|| String::new());
+    let mut message = use_signal(|| String::new());
+
     let mut status = use_signal(|| String::new());
     let mut is_submitting = use_signal(|| false);
 
     let handle_submit = move |evt: Event<FormData>| async move {
+        evt.prevent_default();
         is_submitting.set(true);
         status.set(String::new());
 
-        let values = evt.values();
-
-        let get_value = |key: &str| -> String {
-            values
-                .iter()
-                .find(|(k, _)| k == key)
-                .map(|(_, v)| match v {
-                    dioxus::prelude::FormValue::Text(s) => s.clone(),
-                    _ => String::new(),
-                })
-                .unwrap_or_default()
-        };
-
         let form_data = ContactFormData {
-            name: get_value("name"),
-            company: get_value("company"),
-            email: get_value("email"),
-            phone: get_value("phone"),
-            reason: get_value("reason"),
-            message: get_value("message"),
+            name: name(),
+            company: company(),
+            email: email(),
+            phone: phone(),
+            reason: reason(),
+            message: message(),
         };
 
-        match send_contact_email(form_data).await {
-            Ok(_) => {
-                status.set("Thank you! Your message has been sent successfully.".to_string());
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            match send_contact_email(form_data).await {
+                Ok(_) => {
+                    status.set("Thank you! Your message has been sent successfully.".to_string());
+                    name.set(String::new());
+                    company.set(String::new());
+                    email.set(String::new());
+                    phone.set(String::new());
+                    reason.set(String::new());
+                    message.set(String::new());
+                }
+                Err(e) => {
+                    status.set(format!("Error sending message: {}. Please try again.", e));
+                }
             }
-            Err(e) => {
-                status.set(format!("Error sending message: {}. Please try again.", e));
-            }
+        }
+
+        #[cfg(target_arch = "wasm32")]
+        {
+            status.set("Contact form submission is only available when running with server features enabled.".to_string());
         }
 
         is_submitting.set(false);
@@ -58,23 +69,12 @@ pub fn Contact() -> Element {
     rsx! {
         section { class: "py-16 bg-white",
             div { class: "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8",
-                // Introductory text
                 div { class: "mb-8 space-y-4",
                     p { class: "text-base text-gray-700",
-                        "For career-related inquiries, please visit our "
-                        Link {
-                            to: Route::CareersPage {},
-                            class: "text-navy underline hover:no-underline",
-                            "Careers"
-                        }
-                        " page."
-                    }
-                    p { class: "text-base text-gray-700",
-                        "For all other inquiries, please submit the form below."
+                        "Please submit the form below for all inquiries."
                     }
                 }
 
-                // Status message
                 if !status().is_empty() {
                     div {
                         class: if status().contains("Error") {
@@ -86,12 +86,10 @@ pub fn Contact() -> Element {
                     }
                 }
 
-                // Contact Form
                 form {
                     class: "space-y-6",
                     onsubmit: handle_submit,
 
-                    // Name field
                     div {
                         label {
                             r#for: "name",
@@ -103,27 +101,29 @@ pub fn Contact() -> Element {
                             r#type: "text",
                             id: "name",
                             name: "name",
+                            value: "{name}",
                             required: true,
-                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition"
+                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition text-gray-900 bg-white",
+                            oninput: move |evt| name.set(evt.value())
                         }
                     }
 
-                    // Company field
                     div {
                         label {
                             r#for: "company",
                             class: "block text-sm font-medium text-gray-900 mb-2",
-                            "Company"
+                            "Company or Government Organization Affiliation"
                         }
                         input {
                             r#type: "text",
                             id: "company",
                             name: "company",
-                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition"
+                            value: "{company}",
+                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition text-gray-900 bg-white",
+                            oninput: move |evt| company.set(evt.value())
                         }
                     }
 
-                    // Email field
                     div {
                         label {
                             r#for: "email",
@@ -135,12 +135,13 @@ pub fn Contact() -> Element {
                             r#type: "email",
                             id: "email",
                             name: "email",
+                            value: "{email}",
                             required: true,
-                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition"
+                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition text-gray-900 bg-white",
+                            oninput: move |evt| email.set(evt.value())
                         }
                     }
 
-                    // Phone field
                     div {
                         label {
                             r#for: "phone",
@@ -151,11 +152,12 @@ pub fn Contact() -> Element {
                             r#type: "tel",
                             id: "phone",
                             name: "phone",
-                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition"
+                            value: "{phone}",
+                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition text-gray-900 bg-white",
+                            oninput: move |evt| phone.set(evt.value())
                         }
                     }
 
-                    // Reason for Contact dropdown
                     div {
                         label {
                             r#for: "reason",
@@ -166,8 +168,10 @@ pub fn Contact() -> Element {
                         select {
                             id: "reason",
                             name: "reason",
+                            value: "{reason}",
                             required: true,
-                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition bg-white",
+                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition bg-white text-gray-900",
+                            oninput: move |evt| reason.set(evt.value()),
                             option { value: "", "Select a reason..." }
                             option { value: "general", "General Inquiry" }
                             option { value: "partnership", "Partnership Opportunity" }
@@ -177,7 +181,6 @@ pub fn Contact() -> Element {
                         }
                     }
 
-                    // Message field
                     div {
                         label {
                             r#for: "message",
@@ -189,12 +192,13 @@ pub fn Contact() -> Element {
                             id: "message",
                             name: "message",
                             rows: "6",
+                            value: "{message}",
                             required: true,
-                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition resize-none"
+                            class: "w-full px-4 py-2.5 border border-gray-300 focus:ring-2 focus:ring-navy focus:border-navy outline-none transition resize-none text-gray-900 bg-white",
+                            oninput: move |evt| message.set(evt.value())
                         }
                     }
 
-                    // Submit button
                     button {
                         r#type: "submit",
                         disabled: is_submitting(),
@@ -216,8 +220,9 @@ pub fn Contact() -> Element {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 #[post("/api/contact")]
-async fn send_contact_email(form_data: ContactFormData) -> Result<String> {
+async fn send_contact_email(form_data: ContactFormData) -> Result<String, ServerFnError> {
     #[cfg(feature = "server")]
     {
         use lettre::message::header::ContentType;
@@ -249,7 +254,6 @@ async fn send_contact_email(form_data: ContactFormData) -> Result<String> {
             form_data.message
         );
 
-        // Get SMTP credentials from environment variables
         let smtp_username = std::env::var("SMTP_USERNAME")
             .unwrap_or_else(|_| "your-email@example.com".to_string());
         let smtp_password = std::env::var("SMTP_PASSWORD")
@@ -259,32 +263,31 @@ async fn send_contact_email(form_data: ContactFormData) -> Result<String> {
 
         let email = Message::builder()
             .from(smtp_username.parse().map_err(|e| {
-                dioxus::prelude::ServerFnError::new(format!("Invalid from address: {}", e))
+                ServerFnError::new(format!("Invalid from address: {}", e))
             })?)
             .to("evan@maquoketa.net".parse().map_err(|e| {
-                dioxus::prelude::ServerFnError::new(format!("Invalid to address: {}", e))
+                ServerFnError::new(format!("Invalid to address: {}", e))
             })?)
             .subject(format!("Contact Form: {} - {}", form_data.name, reason_display))
             .header(ContentType::TEXT_PLAIN)
             .body(email_body)
-            .map_err(|e| dioxus::prelude::ServerFnError::new(format!("Failed to build email: {}", e)))?;
+            .map_err(|e| ServerFnError::new(format!("Failed to build email: {}", e)))?;
 
         let creds = Credentials::new(smtp_username, smtp_password);
 
         let mailer = SmtpTransport::relay(&smtp_server)
-            .map_err(|e| dioxus::prelude::ServerFnError::new(format!("Failed to connect to SMTP server: {}", e)))?
+            .map_err(|e| ServerFnError::new(format!("Failed to connect to SMTP server: {}", e)))?
             .credentials(creds)
             .build();
 
         mailer.send(&email)
-            .map_err(|e| dioxus::prelude::ServerFnError::new(format!("Failed to send email: {}", e)))?;
+            .map_err(|e| ServerFnError::new(format!("Failed to send email: {}", e)))?;
 
         Ok("Email sent successfully".to_string())
     }
 
     #[cfg(not(feature = "server"))]
     {
-        // This should never be called on the client side
         Ok("Email functionality only available on server".to_string())
     }
 }

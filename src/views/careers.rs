@@ -21,13 +21,13 @@ pub fn CareersPage() -> Element {
         section { class: "py-16 bg-white",
             div { class: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
 
-                // Technology Section
+                
                 div { class: "mb-16",
                     h2 { class: "text-3xl font-bold text-navy mb-8 pb-3 border-b border-gray-300",
                         "Technology"
                     }
                     div { class: "space-y-3",
-                        // Research Engineer
+                        
                         Link {
                             to: Route::JobDetail { job_id: "research-engineer".to_string() },
                             class: "flex justify-between items-center py-3 hover:bg-gray-50 transition-colors group",
@@ -92,7 +92,7 @@ pub fn CareersPage() -> Element {
                             }
                         }
 
-                        // Process Engineer - Fabrication and Automated Manufacturing
+                        
                         Link {
                             to: Route::JobDetail { job_id: "process-engineer-manufacturing".to_string() },
                             class: "flex justify-between items-center py-3 hover:bg-gray-50 transition-colors group",
@@ -111,13 +111,13 @@ pub fn CareersPage() -> Element {
                     }
                 }
 
-                // Operations Section
+                
                 div { class: "mb-12",
                     h2 { class: "text-3xl font-bold text-navy mb-8 pb-3 border-b border-gray-300",
                         "Operations"
                     }
                     div { class: "space-y-3",
-                        // Client Relationship Manager
+                        
                         Link {
                             to: Route::JobDetail { job_id: "client-relationship-manager".to_string() },
                             class: "flex justify-between items-center py-3 hover:bg-gray-50 transition-colors group",
@@ -134,7 +134,7 @@ pub fn CareersPage() -> Element {
                             }
                         }
 
-                        // Compliance Officer
+                        
                         Link {
                             to: Route::JobDetail { job_id: "compliance-officer".to_string() },
                             class: "flex justify-between items-center py-3 hover:bg-gray-50 transition-colors group",
@@ -151,7 +151,7 @@ pub fn CareersPage() -> Element {
                             }
                         }
 
-                        // Financial Analyst
+                        
                         Link {
                             to: Route::JobDetail { job_id: "financial-analyst".to_string() },
                             class: "flex justify-between items-center py-3 hover:bg-gray-50 transition-colors group",
