@@ -1,8 +1,10 @@
 [application]
+out_dir = "docs"
 
 [web.app]
 # HTML title tag content
 title = "maqr-web-ext"
+base_path = "maqr-web-ext"
 
 # include `assets` in web platform
 [web.resource]

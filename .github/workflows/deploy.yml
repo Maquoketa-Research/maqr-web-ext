@@ -33,12 +33,10 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Build
-        run: dx bundle --platform web --release --base-path /maqr-web-ext
+        run: dx bundle --platform web --release
 
       - name: Setup docs directory structure
         run: |
-          mkdir -p docs
-          cp -r dist/* docs/
           if [ -d "docs/public" ]; then
             mv docs/public/* docs/
             rmdir docs/public
