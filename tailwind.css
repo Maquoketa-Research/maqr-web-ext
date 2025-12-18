@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@layer base {
+  /* Use Palatino for all headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: Palatino, "Palatino Linotype", "Book Antiqua", "Century Schoolbook", Georgia, serif;
+  }
+}
+
+@theme {
+  /* Primary Brand Color - Navy Blue #002743 */
+  --color-navy: #002743;
+}
