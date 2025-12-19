@@ -3,7 +3,7 @@ out_dir = "dist"
 
 [web.app]
 # HTML title tag content
-title = "maqr-web-ext"
+title = "Maquoketa Research"
 
 # include `assets` in web platform
 [web.resource]
